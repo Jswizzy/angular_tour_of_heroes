@@ -1,31 +1,95 @@
-// Copyright (c) 2017. All rights reserved. Use of this source code
-// is governed by a BSD-style license that can be found in the LICENSE file.
-
+import 'dart:async';
 import 'package:angular2/angular2.dart';
+import 'src/hero.dart';
+import 'src/hero_detail_component.dart';
+import 'src/hero_service.dart';
 
 @Component(
   selector: 'my-app',
   template: '''
-  <h1>{{title}}</h1>
-  <h2>{{hero.name}} details!</h2>
-  <div>
-    <label>id: </label>{{hero.id}}
-  </div>
-  <div>
-    <label>name: </label>
-    <input [(ngModel)]="hero.name" placeholder="name">
-  </div>
-  ''',
-  directives: const [COMMON_DIRECTIVES],
+        <h1>{{title}}</h1>
+        <h2>My Heroes</h2>
+        <ul class="heroes">
+          <li *ngFor="let hero of heroes"
+            [class.selected]="hero == selectedHero"
+            (click)="onSelect(hero)">
+            <span class="badge">{{hero.id}}</span> {{hero.name}}
+          </li>
+        </ul>
+        <hero-detail [hero]="selectedHero"></hero-detail>
+      ''',
+  styles: const [
+    '''
+          .selected {
+            background-color: #CFD8DC !important;
+            color: white;
+          }
+          .heroes {
+            margin: 0 0 2em 0;
+            list-style-type: none;
+            padding: 0;
+            width: 15em;
+          }
+          .heroes li {
+            cursor: pointer;
+            position: relative;
+            left: 0;
+            background-color: #EEE;
+            margin: .5em;
+            padding: .3em 0em;
+            height: 1.6em;
+            border-radius: 4px;
+          }
+          .heroes li.selected:hover {
+            color: white;
+          }
+          .heroes li:hover {
+            color: #607D8B;
+            background-color: #EEE;
+            left: .1em;
+          }
+          .heroes .text {
+            position: relative;
+            top: -3px;
+          }
+          .heroes .badge {
+            display: inline-block;
+            font-size: small;
+            color: white;
+            padding: 0.8em 0.7em 0em 0.7em;
+            background-color: #607D8B;
+            line-height: 1em;
+            position: relative;
+            left: -1px;
+            top: -4px;
+            height: 1.8em;
+            margin-right: .8em;
+            border-radius: 4px 0px 0px 4px;
+          }
+        '''
+  ],
+  directives: const [COMMON_DIRECTIVES, HeroDetailComponent,],
+  providers: const [HeroService],
 )
-class AppComponent {
+class AppComponent implements OnInit {
   String title = 'Tour of Heroes';
-  Hero hero = new Hero(1, 'Windstorm');
-}
+  List<Hero> heroes;
+  Hero selectedHero;
 
-class Hero {
-  final int id;
-  String name;
+  final HeroService _heroService;
 
-  Hero(this.id, this.name);
+
+  AppComponent(this._heroService);
+
+  Future<Null> getHeroes() async {
+    heroes = await _heroService.getHeroes();
+  }
+
+  void ngOnInit() {
+    getHeroes();
+  }
+
+  void onSelect(Hero hero) {
+    selectedHero = hero;
+  }
 }
