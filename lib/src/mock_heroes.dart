@@ -1,5 +1,3 @@
-library angular_tour_of_heroes.src.mock_heroes;
-
 import 'hero.dart';
 
 final List<Hero> mockHeroes = [
