@@ -1,9 +1,7 @@
 import 'dart:async';
-
 import 'package:angular2/angular2.dart';
 import 'package:angular2/router.dart';
 import 'package:angular2/platform/common.dart';
-
 import 'hero.dart';
 import 'hero_service.dart';
 
@@ -25,6 +23,11 @@ class HeroDetailComponent implements OnInit {
     var _id = _routeParams.get('id');
     var id = int.parse(_id ?? '', onError: (_) => null);
     if (id != null) hero = await (_heroService.getHero(id));
+  }
+
+  Future<Null> save() async {
+    await _heroService.update(hero);
+    goBack();
   }
 
   void goBack() => _location.back();
